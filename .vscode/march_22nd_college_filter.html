@@ -1,0 +1,662 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <title>College Search</title>
+    <style>
+        html,
+        body {
+            min-height: 100vh;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-image: linear-gradient(aliceblue, beige);
+            background-size: cover;
+            font-family: Georgia, serif;
+            font-size: 1.2em;
+        }
+
+        .displayDiv {
+            justify-content: flex-end;
+            width: 50%;
+        }
+
+        .filterDiv {
+            justify-content: flex-start;
+            border: 0px groove aquamarine;
+            float: left;
+            width: 50%;
+        }
+
+        .buttonDiv {
+            align-items: flex-end;
+            vertical-align: bottom;
+            border: 3px groove aquamarine;
+            background-color: aliceblue;
+            text-align: center;
+            padding-left: 10px;
+            padding-right: 10px;
+            border-radius: 8px;
+        }
+
+        .bulletDiv {
+            float: left;
+            border-right-style: 3px groove aquamarine;
+            width: 50%;
+        }
+
+        .infoDiv {
+            float: right;
+            vertical-align: top;
+            border-left-style: 3px groove aquamarine;
+            width: 50%;
+        }
+
+        .wrapper {
+            display: flex;
+            /* position: sticky;
+            top: 0;
+            width: 100%; */
+        }
+
+        .rangeDiv {
+            display: none;
+            opacity: 0;
+            transition:
+                opacity 1s,
+                display 1s allowDiscrete;
+            transition-duration: 0.25s;
+        }
+
+        .showing {
+            display: block;
+            opacity: 1;
+        }
+
+        @starting-style {
+            .showing {
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <h1 style="text-decoration: underline;">Filter and Display Colleges</h1>
+    <div class="wrapper">
+        <div class="displayDiv" id="displayDiv">
+            <h3 style="text-decoration: underline;">Display Options</h3>
+            <input type="checkbox" id="State" name="school.state" onmouseenter="if(mousedown){renewInfo()}"
+                onclick="renewInfo()">
+            <label for="State">Display State</label><br>
+            <input type="checkbox" id="Admission Rate Percentage" name="latest.admissions.admission_rate.overall"
+                onmouseenter="if(mousedown){renewInfo()}" onclick="renewInfo()">
+            <label for="Admission Rate">Display Admission Rates</label><br>
+            <input type="checkbox" id="In-State Tuition and Fees" name="latest.cost.tuition.in_state"
+                onmouseenter="if(mousedown){renewInfo()}" onclick="renewInfo()">
+            <label for="In-State Tuition and Fees">Display In-State Tuition and Fees ($)</label><br>
+            <input type="checkbox" id="Out-of-State Tuition and Fees" name="latest.cost.tuition.out_of_state"
+                onmouseenter="if(mousedown){renewInfo()}" onclick="renewInfo()">
+            <label for="Out-of-State Tuition and Fees">Display Out-of-State Tuition and Fees ($)</label><br>
+            <input type="checkbox" id="Gender Demographics"
+                name="latest.student.demographics.men,latest.student.demographics.women"
+                onmouseenter="if(mousedown){renewInfo()}" onclick="renewInfo()">
+            <label for="Gender Demographics">Display Gender Demographics</label><br>
+            <input type="checkbox" id="Students Enrolled" name="latest.student.size"
+                onmouseenter="if(mousedown){renewInfo()}" onclick="renewInfo()">
+            <label for="Students Enrolled">Display Number of Students Enrolled</label><br>
+            <input type="checkbox" id="Top Majors Offered"
+                name="latest.academics.program_percentage.agriculture,latest.academics.program_percentage.resources,latest.academics.program_percentage.architecture,latest.academics.program_percentage.ethnic_cultural_gender,latest.academics.program_percentage.communication,latest.academics.program_percentage.communications_technology,latest.academics.program_percentage.computer,latest.academics.program_percentage.personal_culinary,latest.academics.program_percentage.latest.academics.program_percentage.education,latest.academics.program_percentage.engineering,latest.academics.program_percentage.engineering_technology,latest.academics.program_percentage.language,latest.academics.program_percentage.family_consumer_services,latest.academics.program_percentage.legal,latest.academics.program_percentage.english,latest.academics.program_percentage.humanities,latest.academics.program_percentage.library,latest.academics.program_percentage.biological,latest.academics.program_percentage.mathematics,latest.academics.program_percentage.military,latest.academics.program_percentage.multidiscipline,latest.academics.program_percentage.parks_recreation_fitness,latest.academics.program_percentage.philosophy_religious,latest.academics.program_percentage.theology_religious_vocation,latest.academics.program_percentage.physical_science,latest.academics.program_percentage.science_technology,latest.academics.program_percentage.psychology,latest.academics.program_percentage.security_law_enforcement,latest.academics.program_percentage.public_administration_social_service,latest.academics.program_percentage.social_science,latest.academics.program_percentage.construction,latest.academics.program_percentage.mechanic_repair_technology,latest.academics.program_percentage.precision_production,latest.academics.program_percentage.transportation,latest.academics.program_percentage.visual_performing,latest.academics.program_percentage.health,latest.academics.program_percentage.business_marketing,latest.academics.program_percentage.history"
+                onmouseenter="if(mousedown){renewInfo()}" onclick="renewInfo()">
+            <label for="Top Majors Offered">Display Top 5 Degrees Awarded</label><br>
+            <input type="checkbox" id="Students per 1 Professor"
+                name="latest.student.demographics.student_faculty_ratio" onmouseenter="if(mousedown){renewInfo()}"
+                onclick="renewInfo()">
+            <label for="Students to Professor Ratio">Display Student:Professor Ratio</label><br>
+            <input type="checkbox" id="Students Recieving Financial Aid"
+                name="latest.student.size,latest.cost.title_iv.public.all" onmouseenter="if(mousedown){renewInfo()}"
+                onclick="renewInfo()">
+            <label for="Students Recieving Financial Aid">Display Number of Students Recieving Financial Aid</label><br>
+        </div>
+        <div class="filterDiv" id="filterDiv">
+            <h3 style="text-decoration: underline;">Filter Options</h3>
+            <input type="checkbox" id="StateFilter" name="school.state" onmouseenter="if(mousedown){showHide(this)}"
+                onclick="showHide(this)">
+            <label for="State">Filter By State</label><br>
+            <div class="rangeDiv">
+                <textarea id="textState" style="resize:none" placeholder="Insert a State"></textarea><br>
+            </div>
+
+            <input type="checkbox" id="SchoolName" name="school.name" onmouseenter="if(mousedown){showHide(this)}"
+                onclick="showHide(this)">
+            <label for="SchoolName">Filter By Name</label><br>
+            <div class="rangeDiv">
+                <textarea id="textName" style="resize:none" placeholder="Insert a Name"></textarea><br>
+            </div>
+
+            <input type="checkbox" id="Admission Rate Percentage" name="latest.admissions.admission_rate.overall"
+                onmouseenter="if(mousedown){showHide(this)}" onclick="showHide(this)">
+            <label for="Admission Rate">Filter By Admission Rates</label><br>
+            <div class="rangeDiv">
+                <input type="number" id="admissionMin" width="10" min="0" max="100">
+                <label for="admissionMin">% -- </label>
+                <input type="number" id="admissionMax" min="0" max="100">
+                <label for="admissionMax">%</label><br>
+            </div>
+
+            <input type="checkbox" id="In-State Tuition and Fees" name="latest.cost.tuition.in_state"
+                onmouseenter="if(mousedown){showHide(this)}" onclick="showHide(this)">
+            <label for="In-State Tuition and Fees">Filter By In-State Tuition and Fees ($)</label><br>
+            <div class="rangeDiv">
+                <input type="number" id="inStateTuitionMin" width="10" min="0">
+                <label for="inStateTuitionMin"> -- </label>
+                <input type="number" id="inStateTuitionMax" min="0"><br>
+            </div>
+
+            <input type="checkbox" id="Out-of-State Tuition and Fees" name="latest.cost.tuition.out_of_state"
+                onmouseenter="if(mousedown){showHide(this)}" onclick="showHide(this)">
+            <label for="Out-of-State Tuition and Fees">Filter By Out-of-State Tuition and Fees ($)</label><br>
+            <div class="rangeDiv">
+                <input type="number" id="outOfStateTuitionMin" width="10" min="0">
+                <label for="outOfStateTuitionMin"> -- </label>
+                <input type="number" id="outOfStateTuitionMax" min="0"><br>
+            </div>
+
+            <input type="checkbox" id="Students Enrolled" name="latest.student.size"
+                onmouseenter="if(mousedown){showHide(this)}" onclick="showHide(this)">
+            <label for="Students Enrolled">Filter by Number of Students Enrolled</label><br>
+            <div class="rangeDiv">
+                <input type="number" id="studentsEnrolledMin" width="10" min="0">
+                <label for="studentsEnrolledMin"> -- </label>
+                <input type="number" id="studentsEnrolledMax" min="0"><br>
+            </div>
+
+            <p id="paragraph" style="color:crimson; display:none;">The state could not be found. Please check your
+                spelling.</p>
+        </div>
+    </div>
+    <div class="buttonDiv">
+        <button type="button" style="display:none" onclick="pageNumber-=1; getCollegeCall()" id="previousPage"
+            content="width=device-width, initial-scale=1"> &lt; </button>
+        <button type="button" style="background-color:lavender; color:navy; border: aquamarine; font-size: 16px;" 
+            onclick="pageNumber=0; getCollegeCall()"
+            onmouseover="style='color:blue; background-color:aliceblue; border: aquamarine; font-size: 16px'"
+            onmouseleave="style='background-color:lavender; color:navy; border: aquamarine; font-size: 16px'"
+            content="width=device-width, initial-scale=1">Get
+            Colleges</button>
+        <button type="button" style="display:none" onclick="pageNumber++; getCollegeCall()" id="nextPage"
+            content="width=device-width, initial-scale=1"> &gt; </button><br>
+        <label for="sortOptions" style="font-size: medium;">Sort By:</label>
+        <select name="sortOptions" id="sortOptions" onchange="renewList()">
+            <option value="">None</option>
+            <option value="latest.admissions.admission_rate.overall">Admission Rate
+            </option>
+            <option value="latest.cost.tuition.in_state">In-State Tuition and Fees
+            </option>
+            <option value="latest.cost.tuition.out_of_state">Out-of-State Tuition and
+                Fees
+            </option>
+            <option value="latest.student.size">Number of Students Inrolled</option>
+        </select>
+        <select name="ascDesc" id="ascDesc" onchange="renewList()">
+            <option value=""></option>
+            <option value="asc">Ascending</option>
+            <option value="desc">Descending</option>
+        </select>
+
+    </div>
+    <br>
+    <div class="wrapper">
+        <div class="bulletDiv">
+            <ul id="list"></ul>
+        </div>
+        <div class="infoDiv">
+            <h2 id="collegeTitle" style="text-decoration: underline;"></h2>
+            <p id="specificInfo"></p>
+            <h3 id="majorsTitle" style="display:none">Top 5 Degrees Awarded:</h3>
+            <ol id="majorsList"></ol>
+            <canvas id="genderCanvas" width="400" length="150" style="display:none"></canvas>
+        </div>
+    </div>
+    <script>
+        const AVERAGE_IN_STATE_TUITION = 11610;
+        const AVERAGE_OUT_STATE_TUITION = 24513;
+        const MAX_IN_STATE_TUITION = 80000;
+        const MAX_OUT_STATE_TUITION = 80000;
+        const FIELD_AMOUNT = document.getElementsByTagName("input").length;
+        const PER_PAGE = 20;
+        let pageNumber = 0;
+        let firstTime = "true";
+        let bulletsInPreviousPage = 0;
+        let newElement;
+        let fields;
+        let filterDiv = document.getElementById("filterDiv");
+        let displayDiv = document.getElementById("displayDiv");
+        let mousedown = false;
+        window.onmousedown = () => {
+            mousedown = true;
+        }
+        window.onmouseup = () => {
+            mousedown = false;
+        }
+        for (let i = 0; i < FIELD_AMOUNT; i++) {
+            if (document.getElementsByTagName("input")[i].type == "checkbox") {
+                document.getElementsByTagName("input")[i].addEventListener("mouseenter", function () { if (!this.checked && mousedown) { this.checked = true; } else if (mousedown) { this.checked = false } });
+            }
+        }
+
+        // Return a promise containing the data recieved from the API    
+        async function getCollege() {
+            let state;
+            let filterFields = "";
+            let sort = "";
+            let wrongState = false;
+
+            // The API searches state by a two-letter keyword. If the two-letter keyword is inputted, make that the state being searched. Otherwise, transform the state inputted into a two-letter keyword.
+            if (document.getElementById("StateFilter").checked) {
+                if (document.getElementById("textState").value.length == 2) {
+                    state = document.getElementById("textState").value;
+                }
+                else {
+                    try {
+                        switch (document.getElementById("textState").value.toLowerCase()) {
+                            case "alabama": state = "al"; break;
+                            case "alaska": state = "ak"; break;
+                            case "arizona": state = "az"; break;
+                            case "arkansas": state = "ar"; break;
+                            case "american samoa": state = "as"; break;
+                            case "california": state = "ca"; break;
+                            case "colorado": state = "co"; break;
+                            case "connecticut": state = "ct"; break;
+                            case "delaware": state = "de"; break;
+                            case "district of columbia": state = "dc"; break;
+                            case "florida": state = "fl"; break;
+                            case "georgia": state = "ga"; break;
+                            case "guam": state = "gu"; break;
+                            case "hawaii": state = "hi"; break;
+                            case "idaho": state = "id"; break;
+                            case "illinois": state = "il"; break;
+                            case "indiana": state = "in"; break;
+                            case "iowa": state = "ia"; break;
+                            case "kansas": state = "ks"; break;
+                            case "kentucky": state = "ky"; break;
+                            case "louisiana": state = "la"; break;
+                            case "maine": state = "me"; break;
+                            case "maryland": state = "md"; break;
+                            case "massachusetts": state = "ma"; break;
+                            case "michigan": state = "mi"; break;
+                            case "minnesota": state = "mn"; break;
+                            case "mississippi": state = "ms"; break;
+                            case "missouri": state = "mo"; break;
+                            case "montana": state = "mt"; break;
+                            case "nebraska": state = "ne"; break;
+                            case "nevada": state = "nv"; break;
+                            case "new hampshire": state = "nh"; break;
+                            case "new jersey": state = "nj"; break;
+                            case "new mexico": state = "nm"; break;
+                            case "new york": state = "ny"; break;
+                            case "north carolina": state = "nc"; break;
+                            case "north dakota": state = "nd"; break;
+                            case "northern mariana islands": state = "mp"; break;
+                            case "ohio": state = "oh"; break;
+                            case "oklahoma": state = "ok"; break;
+                            case "oregon": state = "or"; break;
+                            case "pennsylvania": state = "pa"; break;
+                            case "puerto rico": state = "pr"; break;
+                            case "rhode island": state = "ri"; break;
+                            case "south carolina": state = "sc"; break;
+                            case "south dakota": state = "sd"; break;
+                            case "tennessee": state = "tn"; break;
+                            case "texas": state = "tx"; break;
+                            case "trust territories": state = "tt"; break;
+                            case "utah": state = "ut"; break;
+                            case "vermont": state = "vt"; break;
+                            case "virginia": state = "va"; break;
+                            case "virgin islands": state = "vi"; break;
+                            case "washington": state = "wa"; break;
+                            case "west virginia": state = "wv"; break;
+                            case "wisconsin": state = "wi"; break;
+                            case "wyoming": state = "wy"; break;
+                            default: wrongState = true; throw new Error(); 
+                        }
+                    } catch (e) {
+                        document.getElementById("paragraph").style.display = "inline";
+                        document.getElementById("nextPage").style.display = "none";
+                        document.getElementById("previousPage").style.display = "none";
+                    }
+                }
+            }
+
+            if (!wrongState) {document.getElementById("paragraph").style.display = "none";}
+
+            // Check if filtering options were selected.
+            for (let i = 0; i < FIELD_AMOUNT; i++) {
+                if (document.getElementsByTagName("input")[i].checked) {
+                    if (filterDiv.contains(document.getElementsByTagName("input")[i])) {
+
+                        // Is the filtering options "by state?" If so, add that to the query.
+                        if (document.getElementsByTagName("input")[i] == document.getElementById("StateFilter")) {
+                            filterFields += "&" + document.getElementsByTagName("input")[i].name + "=" + state;
+                        }
+
+                        else if (document.getElementsByTagName("input")[i] == document.getElementById("SchoolName")) {
+                            filterFields += "&" + document.getElementsByTagName("input")[i].name + "=" + document.getElementById("textName").value;
+                        }
+
+                        // Is the filtering option filtered by percentages? If so, divide all of them by 100 so they match up with what the API expects.
+                        else if (document.getElementsByTagName("input")[i].id.toLowerCase().includes("percentage")) {
+                            filterFields += "&" + document.getElementsByTagName("input")[i].name + "__range=" + (parseFloat(document.getElementsByTagName("input")[i + 1].value) / 100) + ".." + (parseFloat(document.getElementsByTagName("input")[i + 2].value) / 100);
+                        }
+
+                        // If the filtering option is not any of the above, just add it to the query.
+                        else {
+                            filterFields += "&" + document.getElementsByTagName("input")[i].name + "__range=" + (document.getElementsByTagName("input")[i + 1].value) + ".." + (document.getElementsByTagName("input")[i + 2].value);
+                        }
+                    }
+                }
+            }
+
+            //Sort (if sorting was selected)
+            if (document.getElementById("sortOptions").value !== "" && document.getElementById("ascDesc").value !== "") {
+                sort = "&sort=" + document.getElementById("sortOptions").value + ":" + document.getElementById("ascDesc").value;
+            }
+
+            let url = "https://api.data.gov/ed/collegescorecard/v1/schools?api_key=eVdVHUliidPdIX9PzTHmzCILuZB3HEd6u0g74Rbw&fields=school.name,id&page=" + pageNumber + "&per_page=" + PER_PAGE + filterFields + sort;
+            const response = await fetch(url);
+            const json = await response.json();
+            return json;
+        }
+
+        function getCollegeCall() {
+            getCollege().then(json => {
+                let bulletsInCurrentPage;
+                if (json["metadata"]["total"] - (PER_PAGE * pageNumber) >= PER_PAGE) {
+                    bulletsInCurrentPage = PER_PAGE;
+                }
+                else {
+                    bulletsInCurrentPage = json["metadata"]["total"] % PER_PAGE;
+                }
+
+                // If it's the first time, make the new bullet points that are the college names.
+                if (firstTime == "true") {
+                    for (let i = 0; i < PER_PAGE; i++) {
+                        if ((i + 1) > bulletsInCurrentPage) {
+                            document.getElementById("nextPage").style.display = "none";
+                            break;
+                        }
+
+                        // If the number of colleges is less than PER_PAGE, hide the next page button and break out of the loop.
+                        else {
+                            const newBullet = document.createElement("li");
+                            newBullet.setAttribute("onmouseover", "style='color:DimGrey'");
+                            newBullet.setAttribute("onmouseleave", "style='color:black'");
+                            newElement = document.createTextNode(json["results"][i]["school.name"]);
+                            newBullet.appendChild(newElement);
+                            const currentBullet = document.getElementById("list");
+                            currentBullet.appendChild(newBullet);
+                            newBullet.setAttribute("onclick", "showCollegeInfo(this.innerHTML)");
+                            document.getElementById("nextPage").style.display = "inline";
+                        }
+                    }
+                    firstTime = "false";
+                }
+
+                // If it's not the first time, change the existing bullet points to the results.
+                else {
+                    let j = 0;
+                    for (let i = 0; i < PER_PAGE; i++) {
+                        if (j < Math.max(bulletsInCurrentPage, bulletsInPreviousPage)) {
+                            if (bulletsInCurrentPage < bulletsInPreviousPage && (i + 1) > bulletsInCurrentPage) {
+                                document.getElementsByTagName("li")[i].remove();
+                                i--;
+                            }
+                            else if (bulletsInCurrentPage > bulletsInPreviousPage && (i + 1) > bulletsInPreviousPage) {
+                                const newBullet = document.createElement("li");
+                                newBullet.setAttribute("onmouseover", "style='color:DimGrey'");
+                                newBullet.setAttribute("onmouseleave", "style='color:black'");
+                                newElement = document.createTextNode(json["results"][i]["school.name"]);
+                                newBullet.setAttribute("onclick", "showCollegeInfo(this.innerHTML)");
+                                newBullet.appendChild(newElement);
+                                const currentBullet = document.getElementById("list");
+                                currentBullet.appendChild(newBullet);
+                            }
+
+                            // If the number of results is less than PER_PAGE, delete the remaining bullets and hide nextPage.
+                            else {
+                                document.getElementsByTagName("li")[i].innerHTML = json["results"][i]["school.name"];
+                            }
+                            j++;
+                        }
+                    }
+                }
+
+                //Hide or show the previousPage button
+                if (pageNumber > 0) { document.getElementById("previousPage").style.display = "inline"; }
+                if (pageNumber == 0) { document.getElementById("previousPage").style.display = "none"; }
+                if (bulletsInCurrentPage < PER_PAGE) { document.getElementById("nextPage").style.display = "none"; }
+                if (bulletsInCurrentPage == PER_PAGE) { document.getElementById("nextPage").style.display = "inline"; }
+
+                bulletsInPreviousPage = bulletsInCurrentPage;
+            });
+        }
+
+
+        // Return a promise containing the information about a certain college.
+        async function getCollegeInfo(collegeName) {
+            fields = "";
+            for (let i = 0; i < FIELD_AMOUNT; i++) {
+
+                // Determine what information should be returned about said college.
+                if (displayDiv.contains(document.getElementsByTagName("input")[i])) {
+                    if (document.getElementsByTagName("input")[i].checked) {
+                        fields += "," + document.getElementsByTagName("input")[i].name;
+                    }
+                }
+            }
+            const url = "https://api.data.gov/ed/collegescorecard/v1/schools?api_key=eVdVHUliidPdIX9PzTHmzCILuZB3HEd6u0g74Rbw&fields=school.name,id" + fields + "&school.name=" + collegeName.replace("&amp;", "");
+            const response = await fetch(url);
+            const json = await response.json();
+            return json;
+        }
+
+        // Return and display the actual information about a certain college.
+        function showCollegeInfo(collegeName) {
+            getCollegeInfo(collegeName).then(json => {
+                if (document.getElementById("majorsList").hasChildNodes()) {
+                    for (let i = 0; i < 5; i++) {
+                        document.getElementById("majorsList").childNodes[0].remove();
+                    }
+                }
+                let collegeNumberInResponse = 0;
+                document.getElementById("specificInfo").innerHTML = "";
+
+                // Determine where in the list of colleges returned is the college we're specifically looking for.
+                for (let i = 0; i < json["metadata"]["total"]; i++) {
+                    if (json["results"][i]["school.name"] == collegeName) {
+                        document.getElementById("collegeTitle").innerHTML = json["results"][i]["school.name"];
+                        collegeNumberInResponse = i;
+                    }
+                }
+
+                // Display the information by adding it into "specificInfo."
+                for (let i = 0; i < FIELD_AMOUNT; i++) {
+                    if (displayDiv.contains(document.getElementsByTagName("input")[i])) {
+                        if (document.getElementsByTagName("input")[i].checked) {
+                            // Create the "Men/Women" visual display.
+                            if (document.getElementsByTagName("input")[i].id == "Gender Demographics") {
+                                let menCount = json["results"][collegeNumberInResponse]["latest.student.demographics.men"];
+                                let womenCount = json["results"][collegeNumberInResponse]["latest.student.demographics.women"];
+                                const canvas = document.getElementById("genderCanvas");
+                                const ctx = canvas.getContext("2d");
+                                ctx.fillStyle = "darkBlue"
+                                ctx.fillRect(0, 0.25 * canvas.height, menCount * canvas.width, 50);
+                                ctx.fillStyle = "cornflowerblue";
+                                ctx.fillRect(menCount * canvas.width, 0.25 * canvas.height, womenCount * canvas.width, 50);
+                                ctx.fillStyle = "white"
+                                ctx.textAlign = "center";
+                                ctx.font = "20px Georgia";
+                                ctx.fillText("Men " + (menCount * 100).toFixed(2) + "%", (menCount * canvas.width) / 2, 67.5, menCount * canvas.width);
+                                ctx.fillText("Women " + (womenCount * 100).toFixed(2) + "%", (menCount * canvas.width) + (womenCount * canvas.width) / 2, 67.5, womenCount * canvas.width);
+                                canvas.style.display = "inline";
+                            }
+
+                            else if (document.getElementsByTagName("input")[i].id == "In-State Tuition and Fees" || document.getElementsByTagName("input")[i].id == "Out-of-State Tuition and Fees") {
+                                document.getElementById("specificInfo").append(document.getElementsByTagName("input")[i].id + ": " + json["results"][collegeNumberInResponse][document.getElementsByTagName("input")[i].name]);
+                                document.getElementById("specificInfo").appendChild(document.createElement("br"));
+                                const tuitionCanvas = document.createElement("canvas");
+                                tuitionCanvas.width = "400";
+                                tuitionCanvas.height = "50";
+                                document.getElementById("specificInfo").appendChild(tuitionCanvas);
+                                let canvas = tuitionCanvas;
+                                let averageTuition;
+                                let maxTuition;
+                                let tuitionVar;
+                                switch (document.getElementsByTagName("input")[i].id) {
+                                    case ("In-State Tuition and Fees"): averageTuition = AVERAGE_IN_STATE_TUITION; maxTuition = MAX_IN_STATE_TUITION; tuitionVar = "latest.cost.tuition.in_state"; break;
+                                    case ("Out-of-State Tuition and Fees"): averageTuition = AVERAGE_OUT_STATE_TUITION; maxTuition = MAX_OUT_STATE_TUITION; tuitionVar = "latest.cost.tuition.out_of_state"; break;
+                                }
+                                const ctx = canvas.getContext("2d");
+                                const linGrad = ctx.createLinearGradient(0, canvas.height, canvas.width, canvas.height);
+                                linGrad.addColorStop(0, "green");
+                                linGrad.addColorStop(averageTuition / maxTuition, "yellow");
+                                linGrad.addColorStop(1, "red");
+                                ctx.fillStyle = linGrad;
+                                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                                ctx.strokeStyle = "gainsboro";
+                                ctx.lineWidth = 2;
+                                ctx.lineCap = "square";
+                                ctx.beginPath();
+                                ctx.moveTo(canvas.width * (json["results"][collegeNumberInResponse][tuitionVar] / maxTuition), 0);
+                                ctx.lineTo(canvas.width * (json["results"][collegeNumberInResponse][tuitionVar] / maxTuition), canvas.height);
+                                ctx.stroke();
+                                ctx.moveTo(canvas.width * (averageTuition / maxTuition), 0);
+                                ctx.lineTo(canvas.width * (averageTuition / maxTuition), canvas.height);
+                                ctx.stroke();
+                                ctx.fillStyle = "black";
+                                ctx.textAlign = "center";
+                                ctx.font = "16px Times New Roman";
+                                ctx.fillText("Average: $" + averageTuition, canvas.width * (averageTuition / maxTuition), canvas.height / 4);
+                                ctx.fillText("Yours: $" + json["results"][collegeNumberInResponse][tuitionVar], canvas.width * (json["results"][collegeNumberInResponse][tuitionVar] / maxTuition), 3 * canvas.height / 4, canvas.width * (json["results"][collegeNumberInResponse][tuitionVar] / maxTuition));
+                            }
+
+                            else if (document.getElementsByTagName("input")[i].id == "Top Majors Offered") {
+                                document.getElementById("majorsTitle").style.display = "inline";
+                                const majorsArray = [
+                                    ["Agriculture, Agriculture Operations, And Related Sciences", json["results"][collegeNumberInResponse]["latest.academics.program_percentage.agriculture"]],
+                                    ["Natural Resources and Conservation", json["results"][collegeNumberInResponse]["latest.academics.program_percentage.resources"]],
+                                    ["Architecture and Related Services", json["results"][collegeNumberInResponse]["latest.academics.program_percentage.architecture"]],
+                                    ["Area, Ethnic, Cultural, Gender, and Group Studies", json["results"][collegeNumberInResponse]["latest.academics.program_percentage.ethnic_cultural_gender"]],
+                                    ["Communication, Journalism, and Related Programs", json["results"][collegeNumberInResponse]["latest.academics.program_percentage.communication"]],
+                                    ["Communications Technologies/Technicians and Support Services", json["results"][collegeNumberInResponse]["latest.academics.program_percentage.communications_technology"]],
+                                    ["Computer Information Sciences and Support Services", json["results"][collegeNumberInResponse]["latest.academics.program_percentage.computer"]],
+                                    ["Personal and Culinary Services", json["results"][collegeNumberInResponse]["latest.academics.program_percentage.personal_culinary"]],
+                                    ["Education", json["results"][collegeNumberInResponse]["latest.academics.program_percentage.education"]],
+                                    ["Engineering", json["results"][collegeNumberInResponse]["latest.academics.program_percentage.engineering"]],
+                                    ["Engineering Technologies and Engineering-Related Fields", json["results"][collegeNumberInResponse]["latest.academics.program_percentage.egineering_technology"]],
+                                    ["Foreign Languages, Literatures, and Linguistics", json["results"][collegeNumberInResponse]["latest.academics.program_percentage.language"]],
+                                    ["Family and Consumer Sciences/Human Sciences", json["results"][collegeNumberInResponse]["latest.academics.program_percentage.family_consumer_science"]],
+                                    ["Legal Professions and Studies", json["results"][collegeNumberInResponse]["latest.academics.program_percentage.legal"]],
+                                    ["English Language and Literature/Letters", json["results"][collegeNumberInResponse]["latest.academics.program_percentage.english"]],
+                                    ["Liberal Arts and Sciences, General Studies and Humanities"], [json["results"][collegeNumberInResponse]["latest.academics.program_percentage.humanities"]],
+                                    ["Library Science", json["results"][collegeNumberInResponse]["latest.academics.program_percentage.library"]],
+                                    ["Biological and Biomedical Studies", json["results"][collegeNumberInResponse]["latest.academics.program_percentage.biological"]],
+                                    ["Mathematics and Statistics", json["results"][collegeNumberInResponse]["latest.academics.program_percentage.mathematics"]],
+                                    ["Military Technologies and Applied Sciences", json["results"][collegeNumberInResponse]["latest.academics.program_percentage.military"]],
+                                    ["Multi/Interdisciplinary Studies", json["results"][collegeNumberInResponse]["latest.academics.program_percentage.multidiscipline"]],
+                                    ["Parks, Recreation, Leaisure, and Fitness Studies", json["results"][collegeNumberInResponse]["latest.academics.program_percentage.parks_recreation_fintess"]],
+                                    ["Philosophy and Religious Studies", json["results"][collegeNumberInResponse]["latest.academics.program_percentage.philosophy_religious"]],
+                                    ["Theology and Religious Vocations", json["results"][collegeNumberInResponse]["latest.academics.program_percentage.theology_religious_vocations"]],
+                                    ["Physical Sciences", json["results"][collegeNumberInResponse]["latest.academics.program_percentage.physical_science"]],
+                                    ["Science Technology/Technicians", json["results"][collegeNumberInResponse]["latest.academics.program_percentage.science_technology"]],
+                                    ["Psychology", json["results"][collegeNumberInResponse]["latest.academics.program_percentage.psychology"]],
+                                    ["Homeland Security, Law Enforcement, Firefighting and Related Protective Services", json["results"][collegeNumberInResponse]["latest.academics.program_percentage.security_law_enforcement"]],
+                                    ["Public Administration and Social Service Professions", json["results"][collegeNumberInResponse]["latest.academics.program_percentage.public_administration_social_service"]],
+                                    ["Social Sciences", json["results"][collegeNumberInResponse]["latest.academics.program_percentage.social_science"]],
+                                    ["Construction Trades", json["results"][collegeNumberInResponse]["latest.academics.program_percentage.construction"]],
+                                    ["Mechanic and Repair Technologies/Technicians", json["results"][collegeNumberInResponse]["latest.academics.program_percentage.mechanic_repair_technology"]],
+                                    ["Precision Production", json["results"][collegeNumberInResponse]["latest.academics.program_percentage.precision_production"]],
+                                    ["Transportation and Materials Moving", json["results"][collegeNumberInResponse]["latest.academics.program_percentage.transportation"]],
+                                    ["Visual and Performing Arts", json["results"][collegeNumberInResponse]["latest.academics.program_percentage.visual_performing"]],
+                                    ["Health Professions and Related Programs", json["results"][collegeNumberInResponse]["latest.academics.program_percentage.health"]],
+                                    ["Business, Management, Marketing, and Related Support Services", json["results"][collegeNumberInResponse]["latest.academics.program_percentage.business_marketing"]],
+                                    ["History", json["results"][collegeNumberInResponse]["latest.academics.program_percentage.history"]],
+                                ];
+                                majorsArray.sort(majorsSort);
+                                for (let i = 0; i < 5; i++) {
+                                    const newBullet = document.createElement("li");
+                                    newElement = document.createTextNode(majorsArray[i][0] + ": " + (parseFloat(majorsArray[i][1]) * 100).toFixed(2) + "%");
+                                    newBullet.appendChild(newElement);
+                                    const currentBullet = document.getElementById("majorsList");
+                                    currentBullet.appendChild(newBullet);
+                                }
+                            }
+
+                            else if (document.getElementsByTagName("input")[i].id == "Students Recieving Financial Aid") {
+                                if (json["results"][collegeNumberInResponse]["latest.cost.title_iv.public.all"] == null) {
+                                    document.getElementById("specificInfo").append(document.getElementsByTagName("input")[i].id + ": None");
+                                }
+                                else {
+                                    document.getElementById("specificInfo").append(document.getElementsByTagName("input")[i].id + ": " + json["results"][collegeNumberInResponse]["latest.cost.title_iv.public.all"] + "; " + (parseFloat(json["results"][collegeNumberInResponse]["latest.cost.title_iv.public.all"] / json["results"][collegeNumberInResponse]["latest.student.size"]) * 100).toFixed(2) + "%; about "
+                                        + toFraction(parseFloat(json["results"][collegeNumberInResponse]["latest.cost.title_iv.public.all"] / json["results"][collegeNumberInResponse]["latest.student.size"])));
+                                }
+                            }
+
+                            // If we're displaying percentages, multiply them by 100 and display it as a fraction.
+                            else if (document.getElementsByTagName("input")[i].id.toLowerCase().includes("percentage")) {
+                                document.getElementById("specificInfo").append(document.getElementsByTagName("input")[i].id + ": " + (parseFloat(json["results"][collegeNumberInResponse][document.getElementsByTagName("input")[i].name]) * 100).toFixed(2) + "%; about " + toFraction(parseFloat(json["results"][collegeNumberInResponse][document.getElementsByTagName("input")[i].name])));
+                            }
+
+                            // Otherwise, just display the information.
+                            else {
+                                document.getElementById("specificInfo").append(document.getElementsByTagName("input")[i].id + ": " + json["results"][collegeNumberInResponse][document.getElementsByTagName("input")[i].name]);
+                            }
+                            document.getElementById("specificInfo").appendChild(document.createElement("br"));
+                        }
+                    }
+                }
+                if (document.getElementById("Gender Demographics").checked == false) {
+                    document.getElementById("genderCanvas").style.display = "none";
+                }
+
+                if (document.getElementById("Top Majors Offered").checked == false) {
+                    document.getElementById("majorsTitle").style.display = "none";
+                }
+            })
+        }
+
+        function toFraction(decimal) {
+            let denominator = Math.round(100 * (100 / (decimal * 100))) / 100;
+            return "1 in " + denominator;
+        }
+
+        function majorsSort(a, b) {
+            if (a[1] == "undefined") {
+                a[1] == 0;
+            }
+            if (b[1] == "undefined") {
+                b[1] == 0;
+            }
+            return b[1] - a[1];
+        }
+
+        function showHide(filter) {
+            filter.nextElementSibling.nextElementSibling.nextElementSibling.classList.toggle("showing");
+        }
+
+        function renewInfo() {
+            if (document.getElementById("collegeTitle").innerHTML != "") {
+                showCollegeInfo(document.getElementById("collegeTitle").innerHTML);
+            }
+        }
+
+        function renewList() {
+            if ((document.getElementById("sortOptions").value !== "" && document.getElementById("ascDesc").value !== "" && document.getElementById("list").childElementCount !== 0) || (document.getElementById("sortOptions").value == "" && document.getElementById("ascDesc").value == "" && document.getElementById("list").childElementCount !== 0)) {
+                getCollegeCall();
+            }
+        }
+    </script>
+</body>
+
+</html>
