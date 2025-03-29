@@ -180,7 +180,7 @@
     <div class="buttonDiv">
         <button type="button" style="display:none" onclick="pageNumber-=1; getCollegeCall()" id="previousPage"
             content="width=device-width, initial-scale=1"> &lt; </button>
-        <button type="button" style="background-color:lavender; color:navy; border: aquamarine; font-size: 16px;" 
+        <button type="button" style="background-color:lavender; color:navy; border: aquamarine; font-size: 16px;"
             onclick="pageNumber=0; getCollegeCall()"
             onmouseover="style='color:blue; background-color:aliceblue; border: aquamarine; font-size: 16px'"
             onmouseleave="style='background-color:lavender; color:navy; border: aquamarine; font-size: 16px'"
@@ -239,7 +239,7 @@
             for (let i = 0; i < this.childElementCount; i++) {
                 this.childNodes[i].style.color = "black";
                 this.childNodes[i].style.textDecoration = "none";
-            } 
+            }
         });
         let mousedown = false;
         window.onmousedown = () => {
@@ -328,10 +328,10 @@
                             case "west virginia": state = "wv"; break;
                             case "wisconsin": state = "wi"; break;
                             case "wyoming": state = "wy"; break;
-                            default: wrongState = true; throw new Error(); 
+                            default: wrongState = true; throw new Error();
                         }
 
-                    //Alert the user if the state is misspelled.
+                        //Alert the user if the state is misspelled.
                     } catch (e) {
                         document.getElementById("paragraph").style.display = "inline";
                         document.getElementById("nextPage").style.display = "none";
@@ -340,12 +340,12 @@
                         document.getElementById("specificInfo").innerHTML = "";
                         document.getElementById("majorsTitle").style.display = "none";
                         document.getElementById("genderCanvas").style.display = "none";
-                        
+
                     }
                 }
             }
 
-            if (!wrongState) {document.getElementById("paragraph").style.display = "none";}
+            if (!wrongState) { document.getElementById("paragraph").style.display = "none"; }
 
             // Check if filtering options were selected.
             for (let i = 0; i < FIELD_AMOUNT; i++) {
@@ -412,7 +412,7 @@
                             newBullet.appendChild(newElement);
                             const currentBullet = document.getElementById("list");
                             currentBullet.appendChild(newBullet);
-                            newBullet.setAttribute("onclick",  "document.getElementById('list').dispatchEvent(clickEvent); style='color:paleVioletRed; text-decoration:underline'; showCollegeInfo(this.innerHTML);");
+                            newBullet.setAttribute("onclick", "document.getElementById('list').dispatchEvent(clickEvent); style='color:palevioletred; text-decoration:underline'; showCollegeInfo(this.innerHTML);");
                             document.getElementById("nextPage").style.display = "inline";
                         }
                     }
@@ -430,13 +430,14 @@
                             }
                             else if (bulletsInCurrentPage > bulletsInPreviousPage && (i + 1) > bulletsInPreviousPage) {
                                 const newBullet = document.createElement("li");
-                                newBullet.setAttribute("onmouseover", "style='color:DimGrey'");
-                                newBullet.setAttribute("onmouseleave", "style='color:black'");
+                                newBullet.setAttribute("onmouseover", "if (style.color !== 'palevioletred') {style='color:DimGrey'}");
+                                newBullet.setAttribute("onmouseleave", "if (style.color !== 'palevioletred') {style='color:black'}");
                                 newElement = document.createTextNode(json["results"][i]["school.name"]);
-                                newBullet.setAttribute("onclick", "showCollegeInfo(this.innerHTML)");
                                 newBullet.appendChild(newElement);
                                 const currentBullet = document.getElementById("list");
                                 currentBullet.appendChild(newBullet);
+                                newBullet.setAttribute("onclick", "document.getElementById('list').dispatchEvent(clickEvent); style='color:palevioletred; text-decoration:underline'; showCollegeInfo(this.innerHTML);");
+                                document.getElementById("nextPage").style.display = "inline";
                             }
 
                             // If the number of results is less than PER_PAGE, delete the remaining bullets and hide nextPage.
@@ -461,10 +462,10 @@
                         document.getElementById("list").childNodes[i].style.textDecoration = "none";
                     }
                     else {
-                        document.getElementById("list").childNodes[i].style.color = paleVioletRed;
+                        document.getElementById("list").childNodes[i].style.color = "palevioletred";
                         document.getElementById("list").childNodes[i].style.textDecoration = "underline";
                     }
-                } 
+                }
             });
         }
 
@@ -645,7 +646,7 @@
                         }
                     }
                 }
-                
+
                 if (document.getElementById("Gender Demographics").checked == false) {
                     document.getElementById("genderCanvas").style.display = "none";
                 }
